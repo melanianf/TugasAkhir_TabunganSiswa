@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('dashboard')
-    Laporan per periode
-    <small>Laporan per periode</small>
+    Tarik Tunai
+    <small>Transaksi Penarikan Tunai</small>
 @endsection
 
 @section('breadcrumb')
     <li><a href="{{ url('home') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">Laporan</li>
+    <li class="active">Tarik Tunai</li>
 @endsection
 
 @section('content')
@@ -15,12 +15,12 @@
         <div class="col-md-6">
             <div class="box box-primary">
                 <div class="box-header">
-                    <h3 class="box-title">Laporan Periode</h3>
+                    <h3 class="box-title">Formulir Penarikan Tunai</h3>
                 </div>
                 <!-- /.box-header -->
                 <!-- form start -->
-                {!! Form::open(['url' => route('laporan.store'), 'method' => 'post']) !!}
-                    @include('laporan._form')
+                {!! Form::open(['url' => route('tariktunai.store'), 'method' => 'post']) !!}
+                    @include('tariktunai._form')
                 {!! Form::close() !!}
             </div>
             <!-- /.box -->

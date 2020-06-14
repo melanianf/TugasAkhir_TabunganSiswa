@@ -71,7 +71,6 @@ Route::group(['midlleware' => 'web'], function() {
 
     Route::get('/home', 'HomeController@index');
 
-    Route::resource('tabungansiswa', 'TabunganController');
     //
     // Member
     //
@@ -129,6 +128,7 @@ Route::group(['midlleware' => 'web'], function() {
         Route::resource('siswa', 'SiswaController');
         Route::resource('walikelas', 'WalikelasController');
         Route::resource('jenistabungan', 'JenisTabunganController');
+		Route::resource('tabungan', 'TabunganController');
         Route::resource('kelas', 'KelasController');
         Route::resource('authors', 'AuthorsController');
         Route::resource('books', 'BooksController');
@@ -216,9 +216,9 @@ Route::group(['midlleware' => 'web'], function() {
         //Route::resource('laporan', 'LaporanController');
         Route::resource('setortunai', 'SetorTunaiController');
         Route::resource('siswa_view', 'SiswaController');
-        Route::resource('jenistabungan_view', 'JenisTabunganViewController');
+        //Route::resource('jenistabungan_view', 'JenisTabunganViewController');
 		Route::resource('jenistabungansiswa', 'JenisTabunganController');
-        Route::resource('tabungan', 'TabunganController');
+        Route::resource('tabungansiswa', 'TabunganController');
 
         // Daftar peminjaman
         Route::get('mutasi', [

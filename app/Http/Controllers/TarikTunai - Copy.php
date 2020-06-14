@@ -20,6 +20,21 @@ class TarikTunai extends Controller
 
     public function store(Request $request)
     {
+		$this->validate($request, [
+            'nis' => 'required|numeric|min:10' ,
+            'jenis_tabungan' => 'required|alpha_dash' ,
+            'nominal' => 'required|numeric' ,
+			
+        ], [
+			'nis.required' => 'Anda belum memasukan nomor induk siswa!',
+			'nis.numeric' => 'nis hanya dapat terdiri dari angka!',
+            'nis.min' => 'nis tidak valid!',
+			'jenis_tabungan.required' => 'Anda belum memasukan nama tabungan',
+			'jenis_tabungan.alpha_dash' => 'nama hanya dapat terdiri dari alfabet, angka, _ , dan - . contoh : Reguler_12',
+			'nominal.required' => 'Anda belum memasukan nominal transaksi!',
+			'nominal.numeric' => 'Nominal hanya dapat terdiri dari angka!',
+        ]);
+		
         //Menyimpan Data pada Transaksi
         //Menyiapkan Kode Transaksi
         //Ex : T1REG123
@@ -28,15 +43,17 @@ class TarikTunai extends Controller
         //Cek apakah saldo yang akan diambil mencukupi dan status tabungan aktif
         $tabsiswa = Tabungan::where('nis', $request->nis)->where('jenis_tabungan', $request->jenis_tabungan)->first();
         $tabungan = DB::table('jenis_tabungan')->where('nama', $request->jenis_tabungan)->first();
-		$cek_siswa = siswa::where('nis', $request->nis)->first();
+		$cek_siswa = siswa::where('nis', $request->nis)->where('aktif', 1)->first();
+		$cek_tabungan = DB::table('jenis_tabungan')->where('nama', $request->jenis_tabungan)->first();
 		
-        if($tabungan->aktif != 1){
-            $statusTabungan = false;
-        }
-        else{
-            $statusTabungan = true;
-        }
-		if($cek_siswa!=null and $tabsiswa!=null){
+		if($cek_siswa!=null and $tabsiswa!=null and $cek_tabungan!=null){
+			if($tabungan->aktif != 1){
+				$statusTabungan = false;
+			}
+			else{
+				$statusTabungan = true;
+			}
+			
 			if ($tabsiswa->saldo >= $request->nominal and $statusTabungan){
 				//Menambahkan Saldo pada Tabungan
 				$updated = Tabungan::where('nis', $request->nis)->where('jenis_tabungan', $request->jenis_tabungan)->update([
@@ -58,11 +75,11 @@ class TarikTunai extends Controller
 				Session::flash("flash_notification", [
 					"level" => "success",
 					"icon" => "fa fa-check",
-					"message" => "Transaksi Berhasil!"
+					"message" => "Transaksi tarik dengan nominal ".$request->nominal." berhasil!"
 				]);
 			}else{
 				Session::flash("flash_notification", [
-					"level" => "success",
+					"level" => "error",
 					"icon" => "fa fa-check",
 					"message" => "Transaksi Gagal! Saldo Tidak Mencukupi!"
 				]);
@@ -70,14 +87,14 @@ class TarikTunai extends Controller
 		}
 		else if ($cek_siswa!=null && $tabsiswa==null){
 			Session::flash("flash_notification", [
-				"level" => "success",
+				"level" => "error",
 				"icon" => "fa fa-check",
 				"message" => "Transaksi Gagal! Tabungan Belum Terdaftar!"
 			]);
 		}
 		else{
 			Session::flash("flash_notification", [
-				"level" => "success",
+				"level" => "error",
 				"icon" => "fa fa-check",
 				"message" => "Transaksi Gagal! Siswa Tidak Terdaftar!"
 			]);
