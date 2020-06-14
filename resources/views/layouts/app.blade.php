@@ -28,12 +28,40 @@
 	<!-- Date Picker -->
 	<link rel="stylesheet" href="{{ asset('/datepicker/dist/css/bootstrap-datepicker.min.css') }}">
 
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-app.js"></script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.3/firebase-analytics.js"></script>
+
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDxlswEZ_k9qErFnaCEpTp5L8m87CjYCq8",
+        authDomain: "tabunganku-fcm.firebaseapp.com",
+        databaseURL: "https://tabunganku-fcm.firebaseio.com",
+        projectId: "tabunganku-fcm",
+        storageBucket: "tabunganku-fcm.appspot.com",
+        messagingSenderId: "24629695816",
+        appId: "1:24629695816:web:5c36507029323bcb574f7d",
+        measurementId: "G-X1M37HWDZ6"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    </script>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
@@ -219,7 +247,7 @@
                                 </a>
                             </li>
                             <li class="treeview {!! Request::is('admin/tabungan') ? 'active' : '' !!}">
-                                <a href="{{ route('tabungansiswa.index') }}">
+                                <a href="{{ route('tabungan.index') }}">
                                     <i class="fa fa-money" aria-hidden="true"></i>
                                     <span>Tabungan</span>
                                 </a>
@@ -227,7 +255,7 @@
 							<li class="treeview {!! Request::is('admin/status') ? 'active' : '' !!}">
                                 <a href="{{ route('siswa.konfirmasi') }}">
                                     <i class="fa fa-id-card" aria-hidden="true"></i>
-                                    <span>Konfirmasi Status</span>
+                                    <span>Manual Status</span>
                                 </a>
                             </li>
                             <!-- <li class="treeview {!! Request::is('admin/authors*') ? 'active' : '' !!}">
@@ -280,36 +308,45 @@
                                 </a>
                             </li>
 
-                            <li class="treeview {!! Request::is('walikelas/jenistabungan') ? 'active' : '' !!}">
+                            <li class="treeview {!! Request::is('walikelas/jenistabungansiswa') ? 'active' : '' !!}">
                                 <a href="{{ route('jenistabungansiswa.index') }}">
                                     <i class="fa fa-book"></i>
                                     <span>Jenis Tabungan</span>
                                 </a>
                             </li>
 
-                            <li class="treeview {!! Request::is('walikelas/tariktunai') ? 'active' : '' !!}">
-                                <a href="{{ route('tariktunai.create') }}">
-                                    <i class="fa fa-money"></i>
-                                    <span>Tarik Tunai</span>
+                            <li class="treeview {!! Request::is('settings/*') ? 'active' : '' !!}">
+                                <a href="#">
+                                    <i class="fa fa-history"></i> <span>Transaksi</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-right pull-right"></i>
+                                    </span>
                                 </a>
+                                <ul class="treeview-menu">
+                                    <li class="treeview {!! Request::is('walikelas/setortunai') ? 'active' : '' !!}">
+                                        <a href="{{ route('setortunai.create') }}">
+                                            <i class="fa fa-money"></i>
+                                            <span>Setor Tunai</span>
+                                        </a>
+                                    </li>
+                                    <li class="treeview {!! Request::is('walikelas/tariktunai') ? 'active' : '' !!}">
+                                        <a href="{{ route('tariktunai.create') }}">
+                                            <i class="fa fa-money"></i>
+                                            <span>Tarik Tunai</span>
+                                        </a>
+                                    </li>
+                                    <li class="treeview {!! Request::is('walikelas/mutasi') ? 'active' : '' !!}">
+                                        <a href="{{ route('mutasi.index') }}">
+                                            <i class="fa fa-bars"></i>
+                                            <span>Mutasi</span>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
 
-                            <li class="treeview {!! Request::is('walikelas/setortunai') ? 'active' : '' !!}">
-                                <a href="{{ route('setortunai.create') }}">
-                                    <i class="fa fa-money"></i>
-                                    <span>Setor Tunai</span>
-                                </a>
-                            </li>
-
-                            <li class="treeview {!! Request::is('walikelas/mutasi') ? 'active' : '' !!}">
-                                <a href="{{ route('mutasi.index') }}">
-                                    <i class="fa fa-bars"></i>
-                                    <span>Mutasi</span>
-                                </a>
-                            </li>
 
                             <li class="treeview {!! Request::is('walikelas/tabungan') ? 'active' : '' !!}">
-                                <a href="{{ route('tabungan.index') }}">
+                                <a href="{{ route('tabungansiswa.index') }}">
                                     <i class="fa fa-book"></i>
                                     <span>Tabungan</span>
                                 </a>
@@ -441,6 +478,15 @@
 <script type="text/javascript">
 		$(function(){
 			$('#ttl').datepicker({
+				format: 'yyyy-mm-dd',
+				autoclose: true,
+				todayHighlight: true,
+		    });
+		});
+</script>
+<script type="text/javascript">
+		$(function(){
+			$('#ttl2').datepicker({
 				format: 'yyyy-mm-dd',
 				autoclose: true,
 				todayHighlight: true,

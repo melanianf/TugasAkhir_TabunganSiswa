@@ -10,6 +10,10 @@ use App\siswa;
 use Yajra\Datatables\Html\Builder;
 use Yajra\Datatables\Datatables;
 use Session;
+use LaravelFCM\Message\OptionsBuilder;
+use LaravelFCM\Message\PayloadDataBuilder;
+use LaravelFCM\Message\PayloadNotificationBuilder;
+use FCM;
 
 class SetorTunaiController extends Controller
 {
@@ -50,18 +54,19 @@ class SetorTunaiController extends Controller
             //Menambahkan Saldo pada Tabungan
             $updated = Tabungan::where('nis', $request->nis)->where('jenis_tabungan', $request->jenis_tabungan)->update([
                 'saldo' => $tabsiswa->saldo + $request->nominal,
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('d/M/y H:i:s')
             ]);
 
             //Menambahkan Detail Transaksi
             $transaksi = Transaksi::create([
                 'nis' => $request->nis,
-                'kode_transaksi' => "S4REG123",
+                'kode_transaksi' => //"S".if $jenis_tabungan=='reguler'(return 'REG')
+                "S4REG123",
                 'jenis_tabungan' => $request->jenis_tabungan,
                 'jenis_transaksi' => "setor",
                 'nominal' => "$request->nominal",
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'created_at' => date('d/M/y H:i:s'),
+                'updated_at' => date('d/M/y H:i:s')
             ]);
 
             Session::flash("flash_notification", [
@@ -76,19 +81,25 @@ class SetorTunaiController extends Controller
 				'nis' => $request->nis,
 				'jenis_tabungan' => $request->jenis_tabungan,
 				'saldo' => $request->nominal,
-				'created_at' => date('Y-m-d H:i:s'),
-				'updated_at' => date('Y-m-d H:i:s')
+				'created_at' => date('d/M/y H:i:s'),
+				'updated_at' => date('d/M/y H:i:s')
 			]);
-
+            // $kode_transaksi = "S".if($request->jenis_tabungan='reguler'){
+            //     return "REG"
+            // }else if($request->jenis_tabungan='prestasi'){
+            //     return "PRE"
+            // }else {
+            //     return "WST"
+            // }."000";    
             //Menambahkan Detail Transaksi
             $transaksi = Transaksi::create([
                 'nis' => $request->nis,
-                'kode_transaksi' => "S4REG123",
+                'kode_transaksi' =>"S4REG123",
                 'jenis_tabungan' => $request->jenis_tabungan,
                 'jenis_transaksi' => "setor",
                 'nominal' => $request->nominal,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'created_at' => date('d/M/y H:i:s'),
+                'updated_at' => date('d/M/y H:i:s')
             ]);
 
             Session::flash("flash_notification", [
@@ -104,7 +115,34 @@ class SetorTunaiController extends Controller
                 "message" => "Transaksi Gagal! Siswa/Jenis Tabungan Tidak Terdaftar/Tidak Aktif!"
             ]);
         }
+        $this->broadcastMessage($request->nis, $request->jenis_tabungan, $request->nominal);
         return redirect()->route('mutasi.index');
     }
+    
+    private function broadcastMessage($nis, $jenis_tabungan, $nominal){
+        $optionBuilder = new OptionsBuilder();
+        $optionBuilder->setTimeToLive(60*20);
+    
+        $notificationBuilder = new PayloadNotificationBuilder('Transaksi Telah Diterima');
+        $notificationBuilder->setBody('Transaksi tabungan '.$jenis_tabungan.' telah diterima sebesar Rp.'.number_format($nominal,0,",","."))
+                            ->setSound('default');
+        //                     ->setClickAction('https://localhost:3000/home')
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'nis' => $nis,
+            'jenis_tabungan' => $jenis_tabungan,
+            'nominal' => $nominal
+        ]);
+                            
+        $option = $optionBuilder->build();
+        $notification = $notificationBuilder->build();
+        $data = $dataBuilder->build();
+        
+        $tokens = siswa::where('nis',$nis)->pluck('firebase_token')->toArray();
+    
+        $downstreamResponse = FCM::sendTo($tokens, $option, $notification, $data);
 
+        return $downstreamResponse->numberSuccess();
+    }
+    
 }
