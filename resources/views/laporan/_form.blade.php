@@ -4,7 +4,11 @@
 
         <!-- {!! Form::text('tanggal_awal', null, ['class' => 'form-control', 'placeholder' => 'Dari Tanggal, ex: 2000-01-01']) !!} -->
         <div class='input-group date' id='ttl'>
+<<<<<<< HEAD
             {!! Form::text('tanggal_awal', null, ['class' => 'form-control', 'placeholder' => 'Dari Tanggal']) !!}
+=======
+            {!! Form::text('tanggal_awal', null, ['class' => 'form-control', 'placeholder' => 'Dari Tanggal, ex: 2000-01-01']) !!}
+>>>>>>> temp
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-calendar"></span>
 			</span>
@@ -18,7 +22,11 @@
         <!-- {!! Form::text('tanggal_akhir', null, ['class' => 'form-control', 'placeholder' => 'Sampai Tanggal, ex: 2000-01-01']) !!} -->
         <div class='input-group date' id='ttl2'>
         <!-- <input type = "date"> -->
+<<<<<<< HEAD
             {!! Form::text('tanggal_akhir', null, ['class' => 'form-control', 'placeholder' => 'Sampai Tanggal']) !!}
+=======
+            {!! Form::text('tanggal_akhir', null, ['class' => 'form-control', 'placeholder' => 'Sampai Tanggal, ex: 2000-01-01']) !!}
+>>>>>>> temp
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-calendar"></span>
 			</span>

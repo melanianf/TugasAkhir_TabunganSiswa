@@ -54,19 +54,18 @@ class SetorTunaiController extends Controller
             //Menambahkan Saldo pada Tabungan
             $updated = Tabungan::where('nis', $request->nis)->where('jenis_tabungan', $request->jenis_tabungan)->update([
                 'saldo' => $tabsiswa->saldo + $request->nominal,
-                'updated_at' => date('d/M/y H:i:s')
+                'updated_at' => date('Y-m-d H:i:s')
             ]);
 
             //Menambahkan Detail Transaksi
             $transaksi = Transaksi::create([
                 'nis' => $request->nis,
-                'kode_transaksi' => //"S".if $jenis_tabungan=='reguler'(return 'REG')
-                "S4REG123",
+                'kode_transaksi' => "S4REG123",
                 'jenis_tabungan' => $request->jenis_tabungan,
                 'jenis_transaksi' => "setor",
                 'nominal' => "$request->nominal",
-                'created_at' => date('d/M/y H:i:s'),
-                'updated_at' => date('d/M/y H:i:s')
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
             ]);
 
             Session::flash("flash_notification", [
@@ -81,25 +80,19 @@ class SetorTunaiController extends Controller
 				'nis' => $request->nis,
 				'jenis_tabungan' => $request->jenis_tabungan,
 				'saldo' => $request->nominal,
-				'created_at' => date('d/M/y H:i:s'),
-				'updated_at' => date('d/M/y H:i:s')
+				'created_at' => date('Y-m-d H:i:s'),
+				'updated_at' => date('Y-m-d H:i:s')
 			]);
-            // $kode_transaksi = "S".if($request->jenis_tabungan='reguler'){
-            //     return "REG"
-            // }else if($request->jenis_tabungan='prestasi'){
-            //     return "PRE"
-            // }else {
-            //     return "WST"
-            // }."000";    
+
             //Menambahkan Detail Transaksi
             $transaksi = Transaksi::create([
                 'nis' => $request->nis,
-                'kode_transaksi' =>"S4REG123",
+                'kode_transaksi' => "S4REG123",
                 'jenis_tabungan' => $request->jenis_tabungan,
                 'jenis_transaksi' => "setor",
                 'nominal' => $request->nominal,
-                'created_at' => date('d/M/y H:i:s'),
-                'updated_at' => date('d/M/y H:i:s')
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
             ]);
 
             Session::flash("flash_notification", [
@@ -118,6 +111,8 @@ class SetorTunaiController extends Controller
         $this->broadcastMessage($request->nis, $request->jenis_tabungan, $request->nominal);
         return redirect()->route('mutasi.index');
     }
+
+
     
     private function broadcastMessage($nis, $jenis_tabungan, $nominal){
         $optionBuilder = new OptionsBuilder();
